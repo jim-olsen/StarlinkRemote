@@ -10,7 +10,7 @@ def base():
 
 @app.route("/<path:path>")
 def home(path):
-    return send_from_directory('../svelte/publlic', path)
+    return send_from_directory('../svelte/public', path)
 
 
 @app.route("/hello")
@@ -25,4 +25,3 @@ def random_number():
 
 if __name__ == "__main__":
     app.run(port=9999, debug=True)
-    

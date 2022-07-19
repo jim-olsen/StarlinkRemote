@@ -1,12 +1,14 @@
 <script>
-    let rand = -1;
+    import JSONTree from 'svelte-json-tree';
 
-    function getRand() {
-        fetch("./rand")
-            .then(d => d.text())
-            .then(d => (rand = d));
+    let rawJson = {};
+
+    function getStatus() {
+        fetch("./starlink/status")
+            .then(d => d.json())
+            .then(d => rawJson = d);
     }
 </script>
 
-<h1>Your number is {rand}!</h1>
-<button on:click={getRand}>Get a random number</button>
+<JSONTree value="{rawJson}"/>
+<button on:click={getStatus}>Get Dishy Status</button>

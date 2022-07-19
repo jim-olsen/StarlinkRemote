@@ -119,7 +119,7 @@ class Starlink:
             history["outages"].append({"cause": dish_pb2.DishOutage.Cause.Name(outage.cause), "start_timestamp": outage.start_timestamp_ns,
                                        "duration": outage.duration_ns / 1000000000, "did_switch": outage.did_switch})
             key_name = "total_" + dish_pb2.DishOutage.Cause.Name(outage.cause) + "_outages"
-            if not key_name in history:
+            if key_name not in history:
                 history[key_name] = 1
             else:
                 history[key_name] += 1

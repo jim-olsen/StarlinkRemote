@@ -105,37 +105,29 @@ class Starlink:
             result = response.dish_get_history
 
         history = {}
-        history["ping_drop_rates"] = []
-        total_drop_rate = 0.0
-        maximum_drop_rate = 0.0
-        minimum_drop_rate = float("inf")
-        for pop_ping_drop_rate in getattr(result, "pop_ping_drop_rate"):
-            if pop_ping_drop_rate < minimum_drop_rate:
-                minimum_drop_rate = pop_ping_drop_rate
-            if pop_ping_drop_rate > maximum_drop_rate:
-                maximum_drop_rate = pop_ping_drop_rate
-            history["ping_drop_rates"].append(pop_ping_drop_rate)
-            total_drop_rate+= pop_ping_drop_rate
-        history["average_ping_drop_rate"] = total_drop_rate / len(history["ping_drop_rates"])
-        history["minimum_ping_drop_rate"] = minimum_drop_rate
-        history["maximum_ping_drop_rate"] = maximum_drop_rate
-        history["median_ping_drop_rate"] = statistics.median(history["ping_drop_rates"])
+        history.update(self.get_history_object(result, "pop_ping_drop_rate", "ping_drop_rate"))
+        history.update(self.get_history_object(result, "pop_ping_latency_ms", "ping_latency"))
+        history.update(self.get_history_object(result, "downlink_throughput_bps", "downlink_bps"))
+        history.update(self.get_history_object(result, "uplink_throughput_bps", "uplink_bps"))
 
-        history["ping_latency"] = []
-        total_ping_latency = 0.0
-        minimum_latency = float("inf")
-        maximum_latency = 0.0
-        for ping_latency in result.pop_ping_latency_ms:
-            if ping_latency < minimum_latency:
-                minimum_latency = ping_latency
-            if ping_latency > maximum_latency:
-                maximum_latency = ping_latency
-            history["ping_latency"].append(ping_latency)
-            total_ping_latency+= ping_latency
-        history["average_ping_latency"] = total_ping_latency / len(history["ping_latency"])
-        history["minimum_ping_latency"] = minimum_latency
-        history["maximum_ping_latency"] = maximum_latency
-        history["median_ping_latency"] = statistics.median(history["ping_latency"])
+        history["outages"] = []
+        total_outages = 0
+        total_seconds = 0.0
+        cause_enum = dish_pb2.DishOutage.Cause
+
+        for outage in result.outages:
+            history["outages"].append({"cause": dish_pb2.DishOutage.Cause.Name(outage.cause), "start_timestamp": outage.start_timestamp_ns,
+                                       "duration": outage.duration_ns / 1000000000, "did_switch": outage.did_switch})
+            key_name = "total_" + dish_pb2.DishOutage.Cause.Name(outage.cause) + "_outages"
+            if not key_name in history:
+                history[key_name] = 1
+            else:
+                history[key_name] += 1
+            total_outages += 1
+            total_seconds += (outage.duration_ns / 1000000000)
+        history["total_outages"] = total_outages
+        history["total_outage_seconds"] = total_seconds
+        history["average_outage_seconds"] = total_seconds / len(history["outages"])
 
         return history
 

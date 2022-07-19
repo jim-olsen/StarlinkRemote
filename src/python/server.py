@@ -6,6 +6,7 @@ from Starlink import Starlink
 app = Flask(__name__)
 dishy = Starlink()
 
+
 @app.route("/")
 def base():
     return send_from_directory('../svelte/public', 'index.html')
@@ -27,10 +28,16 @@ def random_number():
 
 
 @app.route("/starlink/status")
-def startlink_status():
+def starlink_status():
     status = dishy.get_status()
 
-    return json.dumps(status, indent=4)
+    return json.dumps(status, indent=3)
+
+
+@app.route("/starlink/history")
+def starlink_history():
+    history = dishy.get_history();
+    return json.dumps(history, indent=3)
 
 
 if __name__ == "__main__":

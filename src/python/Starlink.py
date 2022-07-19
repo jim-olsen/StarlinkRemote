@@ -1,6 +1,7 @@
 import grpc
 import math
 import json
+import statistics
 
 import yagrc.reflector
 
@@ -77,6 +78,26 @@ class Starlink:
 
         return status
 
+    def get_history_object(self, source, field, target_name):
+        result = {}
+        result[target_name] = []
+        total_val = 0.0
+        maximum_val = 0.0
+        minimum_val = float("inf")
+        for value in getattr(source, field):
+            if value < minimum_val:
+                minimum_val = value
+            if value > maximum_val:
+                maximum_val = value
+            total_val += value
+            result[target_name].append(value)
+        result["average_" + target_name] = total_val / len(result[target_name])
+        result["minimum_" + target_name] = minimum_val
+        result["maximum_" + target_name] = maximum_val
+        result["median_" + target_name] = statistics.median(result[target_name])
+
+        return result
+
     def get_history(self):
         with grpc.insecure_channel(self.starlinkurl) as channel:
             stub = device_pb2_grpc.DeviceStub(channel)
@@ -84,6 +105,38 @@ class Starlink:
             result = response.dish_get_history
 
         history = {}
+        history["ping_drop_rates"] = []
+        total_drop_rate = 0.0
+        maximum_drop_rate = 0.0
+        minimum_drop_rate = float("inf")
+        for pop_ping_drop_rate in getattr(result, "pop_ping_drop_rate"):
+            if pop_ping_drop_rate < minimum_drop_rate:
+                minimum_drop_rate = pop_ping_drop_rate
+            if pop_ping_drop_rate > maximum_drop_rate:
+                maximum_drop_rate = pop_ping_drop_rate
+            history["ping_drop_rates"].append(pop_ping_drop_rate)
+            total_drop_rate+= pop_ping_drop_rate
+        history["average_ping_drop_rate"] = total_drop_rate / len(history["ping_drop_rates"])
+        history["minimum_ping_drop_rate"] = minimum_drop_rate
+        history["maximum_ping_drop_rate"] = maximum_drop_rate
+        history["median_ping_drop_rate"] = statistics.median(history["ping_drop_rates"])
+
+        history["ping_latency"] = []
+        total_ping_latency = 0.0
+        minimum_latency = float("inf")
+        maximum_latency = 0.0
+        for ping_latency in result.pop_ping_latency_ms:
+            if ping_latency < minimum_latency:
+                minimum_latency = ping_latency
+            if ping_latency > maximum_latency:
+                maximum_latency = ping_latency
+            history["ping_latency"].append(ping_latency)
+            total_ping_latency+= ping_latency
+        history["average_ping_latency"] = total_ping_latency / len(history["ping_latency"])
+        history["minimum_ping_latency"] = minimum_latency
+        history["maximum_ping_latency"] = maximum_latency
+        history["median_ping_latency"] = statistics.median(history["ping_latency"])
+
         return history
 
     def get_obstruction_map(self):
@@ -104,11 +157,14 @@ class Starlink:
                 request = request_class(dish_stow={})
                 stub = reflector.service_stub_class("SpaceX.API.Device.Device")(channel)
                 response = stub.Handle(request, timeout=120)
+                return True
         except grpc.RpcError as e:
             if (isinstance(e, grpc.Call)):
                 print("Failed to stow dish: " + e.details())
             else:
                 print("Failed to stow dish for an unknown reason")
+
+        return False
 
     def dish_unstow(self):
         reflector = yagrc.reflector.GrpcReflectionClient()
@@ -116,14 +172,17 @@ class Starlink:
             with grpc.insecure_channel(self.starlinkurl) as channel:
                 reflector.load_protocols(channel, symbols=["SpaceX.API.Device.Device"])
                 request_class = reflector.message_class("SpaceX.API.Device.Request")
-                request = request_class(dish_stow={"unstow" : True})
+                request = request_class(dish_stow={"unstow": True})
                 stub = reflector.service_stub_class("SpaceX.API.Device.Device")(channel)
                 response = stub.Handle(request, timeout=120)
+                return True
         except grpc.RpcError as e:
             if (isinstance(e, grpc.Call)):
-                print("Failed to stow dish: " + e.details())
+                print("Failed to unstow dish: " + e.details())
             else:
-                print("Failed to stow dish for an unknown reason")
+                print("Failed to unstow dish for an unknown reason")
+
+        return False
 
     def dish_reboot(self):
         reflector = yagrc.reflector.GrpcReflectionClient()
@@ -134,11 +193,14 @@ class Starlink:
                 request = request_class(reboot={})
                 stub = reflector.service_stub_class("SpaceX.API.Device.Device")(channel)
                 response = stub.Handle(request, timeout=120)
+                return True
         except grpc.RpcError as e:
             if (isinstance(e, grpc.Call)):
-                print("Failed to stow dish: " + e.details())
+                print("Failed to reboot dish: " + e.details())
             else:
-                print("Failed to stow dish for an unknown reason")
+                print("Failed to reboot dish for an unknown reason")
+
+        return False
 
 
 def main():

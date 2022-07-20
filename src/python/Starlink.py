@@ -105,6 +105,7 @@ class Starlink:
             result = response.dish_get_history
 
         history = {}
+        history["current"] = result.current
         history.update(self.get_history_object(result, "pop_ping_drop_rate", "ping_drop_rate"))
         history.update(self.get_history_object(result, "pop_ping_latency_ms", "ping_latency"))
         history.update(self.get_history_object(result, "downlink_throughput_bps", "downlink_bps"))
@@ -114,20 +115,19 @@ class Starlink:
         total_outages = 0
         total_seconds = 0.0
         cause_enum = dish_pb2.DishOutage.Cause
-
+        outages_by_category = {}
+        for key in cause_enum.keys():
+            outages_by_category[key] = 0
         for outage in result.outages:
             history["outages"].append({"cause": dish_pb2.DishOutage.Cause.Name(outage.cause), "start_timestamp": outage.start_timestamp_ns,
                                        "duration": outage.duration_ns / 1000000000, "did_switch": outage.did_switch})
-            key_name = "total_" + dish_pb2.DishOutage.Cause.Name(outage.cause) + "_outages"
-            if key_name not in history:
-                history[key_name] = 1
-            else:
-                history[key_name] += 1
+            outages_by_category[dish_pb2.DishOutage.Cause.Name(outage.cause)] += 1
             total_outages += 1
             total_seconds += (outage.duration_ns / 1000000000)
         history["total_outages"] = total_outages
         history["total_outage_seconds"] = total_seconds
         history["average_outage_seconds"] = total_seconds / len(history["outages"])
+        history["outages_by_category"] = outages_by_category
 
         return history
 

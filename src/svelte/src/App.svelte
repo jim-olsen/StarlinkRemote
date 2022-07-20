@@ -1,14 +1,11 @@
 <script>
-    import JSONTree from 'svelte-json-tree';
-
-    let rawJson = {};
-
-    function getStatus() {
-        fetch("./starlink/status")
-            .then(d => d.json())
-            .then(d => rawJson = d);
-    }
+    import StarlinkRawData from "./components/StarlinkRawData.svelte"
+    import StarlinkObstructionMap from "./components/StarlinkObstructionMap.svelte";
+    import StarlinkDataRates from "./components/StarlinkDataRates.svelte"
 </script>
 
-<JSONTree value="{rawJson}"/>
-<button on:click={getStatus}>Get Dishy Status</button>
+<StarlinkRawData/>
+<div style="display: flex; flex-flow: column; justify-content: center">
+    <StarlinkObstructionMap/>
+    <StarlinkDataRates/>
+</div>

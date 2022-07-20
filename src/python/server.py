@@ -1,6 +1,9 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, send_file
 import random
 import json
+import io
+import numpy as np
+from PIL import Image
 from Starlink import Starlink
 
 app = Flask(__name__)
@@ -36,8 +39,19 @@ def starlink_status():
 
 @app.route("/starlink/history")
 def starlink_history():
-    history = dishy.get_history();
+    history = dishy.get_history()
     return json.dumps(history, indent=3)
+
+
+@app.route("/starlink/obstruction_image")
+def starlink_obstruction_image():
+    obstruction_image = dishy.get_obstruction_map()
+    numpy_image = np.array(obstruction_image).astype('uint8')
+    img = Image.fromarray(numpy_image)
+    file_object = io.BytesIO()
+    img.save(file_object, 'PNG')
+    file_object.seek(0)
+    return send_file(file_object, mimetype='image/PNG')
 
 
 if __name__ == "__main__":

@@ -2,11 +2,13 @@ import grpc
 import math
 import json
 import statistics
-
+from PIL import Image
 import yagrc.reflector
+import numpy as np
 
 try:
     from yagrc import importer
+
     importer.add_lazy_packages(["spacex.api.device"])
 except (ImportError, AttributeError):
     print("Error importing lazy packages")
@@ -14,6 +16,7 @@ except (ImportError, AttributeError):
 from spacex.api.device import device_pb2
 from spacex.api.device import device_pb2_grpc
 from spacex.api.device import dish_pb2
+
 
 class Starlink:
     starlinkurl = None
@@ -48,7 +51,8 @@ class Starlink:
         status["alerts"] = alerts
 
         # Obstruction Stats
-        if not math.isnan(result.obstruction_stats.avg_prolonged_obstruction_duration_s) and not math.isnan(result.obstruction_stats.avg_prolonged_obstruction_interval_s):
+        if not math.isnan(result.obstruction_stats.avg_prolonged_obstruction_duration_s) and not math.isnan(
+                result.obstruction_stats.avg_prolonged_obstruction_interval_s):
             status["obstruction_duration_avg"] = result.obstruction_stats.avg_prolonged_obstruction_duration_s
             status["obstruction_interval_avg"] = result.obstruction_stats.avg_prolonged_obstruction_interval_s
 
@@ -119,8 +123,9 @@ class Starlink:
         for key in cause_enum.keys():
             outages_by_category[key] = 0
         for outage in result.outages:
-            history["outages"].append({"cause": dish_pb2.DishOutage.Cause.Name(outage.cause), "start_timestamp": outage.start_timestamp_ns,
-                                       "duration": outage.duration_ns / 1000000000, "did_switch": outage.did_switch})
+            history["outages"].append(
+                {"cause": dish_pb2.DishOutage.Cause.Name(outage.cause), "start_timestamp": outage.start_timestamp_ns,
+                 "duration": outage.duration_ns / 1000000000, "did_switch": outage.did_switch})
             outages_by_category[dish_pb2.DishOutage.Cause.Name(outage.cause)] += 1
             total_outages += 1
             total_seconds += (outage.duration_ns / 1000000000)
@@ -131,14 +136,36 @@ class Starlink:
 
         return history
 
-    def get_obstruction_map(self):
+    def get_obstruction_map_data(self):
         with grpc.insecure_channel(self.starlinkurl) as channel:
             stub = device_pb2_grpc.DeviceStub(channel)
             response = stub.Handle(device_pb2.Request(dish_get_obstruction_map={}), timeout=10)
             result = response.dish_get_obstruction_map
 
-        obstruction_map = {}
-        return obstruction_map
+        return tuple(
+            (result.snr[i:i + result.num_cols]) for i in range(0, result.num_cols * result.num_rows, result.num_cols))
+
+    def get_obstruction_map(self):
+        map_data = self.get_obstruction_map_data()
+
+        def pixel_bytes(row):
+            for point in row:
+                if point > 1.0:
+                    # shouldn't happen, but just in case...
+                    point = 1.0
+
+                if point >= 0.0:
+                    if point >= 0.5:
+                        yield [0x0AD, 0xD8, 0xE6]
+                    else:
+                        yield [0xFF, 0x00, 0x00]
+                else:
+                    yield [0x00, 0x00, 0x00]
+
+        image_array = []
+        for image_row in map_data:
+            image_array.append(list(pixel_bytes(image_row)))
+        return image_array
 
     def dish_stow(self):
         reflector = yagrc.reflector.GrpcReflectionClient()
@@ -201,10 +228,14 @@ def main():
     print(json.dumps(status, indent=3))
     history = starlink.get_history()
     print(json.dumps(history, indent=3))
-    obstruction_map = starlink.get_obstruction_map()
+    obstruction_map = starlink.get_obstruction_map_data()
     print(json.dumps(obstruction_map, indent=3))
+
+    obstruction_image = starlink.get_obstruction_map()
+    numpy_image = np.array(obstruction_image).astype('uint8')
+    img = Image.fromarray(numpy_image)
+    img.show()
 
 
 if __name__ == '__main__':
     main()
-

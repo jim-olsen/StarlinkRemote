@@ -3,6 +3,9 @@
     import LineChart from "./d3/LineChart.svelte";
     import {starlinkHistory} from "../stores";
 
+    export let chartWidth = 600;
+    export let chartHeight = 300;
+
     let pingLatency = 0.0;
     let pingLatencyMax = 0.0;
     let pingLatencyMin = 0.0;
@@ -23,8 +26,8 @@
 
     onDestroy(unsubscribeHistory);
 </script>
-<div class="center" style="display:flex; flex-flow:column; justify-content: center; align-items: baseline">
-    <LineChart XAxisTitle="Time" YAxisTitle="Latency (ms)" dataset={pingLatencyChartData} width=600 height=300 />
+<div class="center" style="display:flex; flex-flow:column; align-items: center">
+    <LineChart XAxisTitle="Elapsed Seconds" YAxisTitle="Latency (ms)" dataset={pingLatencyChartData} width={chartWidth} height={chartHeight} />
     <h2>{pingLatency} / {pingLatencyAvg} / {pingLatencyMin} / {pingLatencyMax}</h2>
     <h4>Ping Latency (current/avg/min/max) ms</h4>
 </div>

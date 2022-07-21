@@ -2,6 +2,9 @@
     import LineChart from "./d3/LineChart.svelte";
     import {starlinkHistory, starlinkStatus} from "../stores";
     import {onDestroy} from "svelte";
+    export let chartWidth = 600;
+    export let chartHeight = 300;
+
     let downloadMbps = 0.0
     let downloadMaxMbps = 0.0
     let downloadAvgMbps = 0.0
@@ -25,8 +28,8 @@
     onDestroy(unsubscribeStatus);
     onDestroy(unsubscribeHistory);
 </script>
-<div style="display:flex; flex-flow:column; justify-content: center; align-items: baseline">
-    <LineChart XAxisTitle="Time" YAxisTitle="Download (MBps)" dataset={downloadChartData} width=600 height=300 />
+<div style="display:flex; flex-flow:column; align-items: center; justify-content: flex-start;">
+    <LineChart XAxisTitle="Elapsed Seconds" YAxisTitle="Download (MBps)" dataset={downloadChartData} width={chartWidth} height={chartHeight} />
     <h2>{downloadMbps} / {downloadAvgMbps} / {downloadMaxMbps}</h2>
     <h4>Download MBps (current/avg/max)</h4>
 </div>

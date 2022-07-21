@@ -4,6 +4,9 @@
     import {starlinkStatus} from "../stores";
     import {starlinkHistory} from "../stores";
 
+    export let chartWidth=600;
+    export let chartHeight=300;
+
     let uploadMbps = 0.0
     let uploadMaxMbps = 0.0
     let uploadAvgMbps = 0.0
@@ -27,8 +30,8 @@
     onDestroy(unsubscribeStatus);
     onDestroy(unsubscribeHistory);
 </script>
-<div class="center" style="display:flex; flex-flow:column; justify-content: center; align-items: baseline">
-    <LineChart XAxisTitle="Time" YAxisTitle="Upload (MBps)" dataset={uploadChartData} width=600 height=300 />
+<div class="center" style="display:flex; flex-flow:column; align-items: center">
+    <LineChart XAxisTitle="Elapsed Seconds" YAxisTitle="Upload (MBps)" dataset={uploadChartData} width={chartWidth} height={chartHeight} />
     <h2>{uploadMbps} / {uploadAvgMbps} / {uploadMaxMbps}</h2>
     <h4>Upload Mbps (current/avg/max)</h4>
 </div>

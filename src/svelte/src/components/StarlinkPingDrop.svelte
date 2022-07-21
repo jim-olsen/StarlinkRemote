@@ -3,6 +3,9 @@
     import LineChart from "./d3/LineChart.svelte";
     import {starlinkHistory} from "../stores";
 
+    export let chartWidth=600;
+    export let chartHeight=300;
+
     let pingDrop = 0.0;
     let pingDropMax = 0.0;
     let pingDropAvg = 0.0;
@@ -21,8 +24,8 @@
 
     onDestroy(unsubscribeHistory);
 </script>
-<div class="center" style="display:flex; flex-flow:column; justify-content: center; align-items: baseline">
-    <LineChart XAxisTitle="Time" YAxisTitle="Ping Loss %" dataset={pingDropChartData} width=600 height=300 />
+<div class="center" style="display:flex; flex-flow:column; justify-content: center; align-items: center">
+    <LineChart XAxisTitle="Elapsed Seconds" YAxisTitle="Ping Loss %" dataset={pingDropChartData} width={chartWidth} height={chartHeight} />
     <h2>{pingDrop}% / {pingDropAvg}% / {pingDropMax}%</h2>
     <h4>Ping Drop (current/avg/max)</h4>
 </div>

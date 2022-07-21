@@ -1,14 +1,11 @@
 <script>
     import {
-        csv,
         extent,
         scaleLinear,
-        scaleTime,
         line,
         curveNatural,
-        timeFormat,
+        curveBasis
     } from "d3";
-    import { onMount } from "svelte";
 
     import Axis from "./Axis.svelte";
 
@@ -34,14 +31,14 @@
         .nice();
 
     $: line_gen = line()
-        .curve(curveNatural)
+        .curve(curveBasis)
         .x((d) => xScale(d.x))
         .y((d) => yScale(d.y))(dataset);
 </script>
 
 <main>
     <svg {width} {height}>
-        <g transform={`translate(${margin.left},${margin.top})`}>
+        <g class="lineChart" transform={`translate(${margin.left},${margin.top})`}>
             <Axis {innerHeight} {margin} scale={xScale} position="bottom" />
             <Axis {innerHeight} {margin} scale={yScale} position="left" />
             <text transform={`translate(${-30},${innerHeight / 2}) rotate(-90)`}

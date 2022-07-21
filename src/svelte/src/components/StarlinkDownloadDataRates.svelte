@@ -26,7 +26,7 @@
     onDestroy(unsubscribeHistory);
 </script>
 <div style="display:flex; flex-flow:column; justify-content: center; align-items: baseline">
-    <LineChart XAxisTitle="Time" YAxisTitle="Download MBps" dataset={downloadChartData} width=600 height=300 />
+    <LineChart XAxisTitle="Time" YAxisTitle="Download (MBps)" dataset={downloadChartData} width=600 height=300 />
     <h2>{downloadMbps} / {downloadAvgMbps} / {downloadMaxMbps}</h2>
     <h4>Download MBps (current/avg/max)</h4>
 </div>

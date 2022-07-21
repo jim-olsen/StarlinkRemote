@@ -6,6 +6,7 @@ html, body {
 
 body {
     color: #333;
+    background-color: #333333;
     margin: 0;
     padding: 8px;
     box-sizing: border-box;
@@ -15,6 +16,11 @@ body {
 a {
     color: rgb(0,100,200);
     text-decoration: none;
+}
+
+text, h2, h1, h3, h4 {
+    color: #BFDDE0;
+    fill: #BFDDE0;
 }
 
 a:hover {
@@ -59,4 +65,40 @@ button:active {
 
 button:focus {
     border-color: #666;
+}
+
+.axis line {
+    stroke: #9ca3af;
+}
+
+.axis path {
+    stroke: #9ca3af;
+}
+
+.axis text {
+    fill: #9ca3af;
+}
+
+.lineChart text {
+    fill: #9ca3af;
+}
+
+.property {
+    color: #BFDDE0 !important;
+}
+
+.operator {
+    color: #BFDDE0 !important;
+}
+
+.Number {
+    color: #86989B !important;
+}
+
+.label {
+    color: #d97706 !important;
+}
+
+.Boolean {
+    color: #059669 !important;
 }

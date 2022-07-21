@@ -73,12 +73,12 @@ class Starlink:
         status["boresight_elevation"] = result.boresight_elevation_deg
         status["ethernet_speed"] = result.eth_speed_mbps
         status["snr_above_noise_floor"] = result.is_snr_above_noise_floor
-        status["cady_ready"] = result.ready_states.cady
-        status["scp_ready"] = result.ready_states.scp
-        status["l1l2_ready"] = result.ready_states.l1l2
-        status["xphy_ready"] = result.ready_states.xphy
-        status["aap_ready"] = result.ready_states.aap
-        status["rf_ready"] = result.ready_states.rf
+        status["ready_states"] = {"cady" : result.ready_states.cady,
+                                  "scp": result.ready_states.scp,
+                                  "l1l2": result.ready_states.l1l2,
+                                  "xphy": result.ready_states.xphy,
+                                  "aap": result.ready_states.aap,
+                                  "rf": result.ready_states.rf}
 
         return status
 

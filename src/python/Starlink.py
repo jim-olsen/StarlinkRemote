@@ -88,7 +88,11 @@ class Starlink:
         total_val = 0.0
         maximum_val = 0.0
         minimum_val = float("inf")
-        for value in getattr(source, field):
+        samples = getattr(source, field)
+        num_samples = len(samples)
+        loop_end = int(source.current) % num_samples
+        for i in range(num_samples):
+            value = samples[(loop_end + 1 + i) % num_samples]
             if value < minimum_val:
                 minimum_val = value
             if value > maximum_val:

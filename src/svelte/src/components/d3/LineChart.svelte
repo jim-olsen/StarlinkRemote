@@ -15,10 +15,10 @@
     export let XAxisTitle = "";
     export let YAxisTitle = "";
     export let dataset = [];
+    export let width = 900,
+        height = 600;
 
     const margin = { top: 15, bottom: 50, left: 50, right: 20 };
-    const width = 900,
-        height = 600;
 
     const innerHeight = height - margin.top - margin.bottom,
         innerWidth = width - margin.left - margin.right;

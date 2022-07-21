@@ -4,13 +4,13 @@
     let rawJson = {};
 
     function getStatus() {
-        fetch("./starlink/status")
+        fetch("./starlink/status/")
             .then(d => d.json())
             .then(d => rawJson = d);
     }
 
     function getHistory() {
-        fetch("./starlink/history")
+        fetch("./starlink/history/")
             .then(d => d.json())
             .then(d => rawJson = d);
     }

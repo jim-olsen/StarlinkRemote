@@ -30,20 +30,20 @@ def random_number():
     return str(random.randint(0, 100))
 
 
-@app.route("/starlink/status")
+@app.route("/starlink/status/")
 def starlink_status():
     status = dishy.get_status()
 
     return json.dumps(status, indent=3)
 
 
-@app.route("/starlink/history")
+@app.route("/starlink/history/")
 def starlink_history():
     history = dishy.get_history()
     return json.dumps(history, indent=3)
 
 
-@app.route("/starlink/obstruction_image")
+@app.route("/starlink/obstruction_image/")
 def starlink_obstruction_image():
     obstruction_image = dishy.get_obstruction_map()
     numpy_image = np.array(obstruction_image).astype('uint8')

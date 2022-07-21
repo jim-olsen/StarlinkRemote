@@ -4,6 +4,8 @@ import commonjs from 'rollup-plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only'
+import dev from 'rollup-plugin-dev'
+//import serve from 'rollup-plugin-serve-proxy'
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -45,7 +47,25 @@ export default {
 
         // If we're building for production (npm run build
         // instead of npm run dev), minify
-        production && terser()
+        production && terser(),
+
+        !production && dev({
+            dirs: ['public'],
+            spa: 'public/index.html',
+            port: 8080,
+            proxy: [{
+                from: '/starlink',
+                to: 'http://127.0.0.1:9999/starlink'
+            }]
+        })
+//        !production && serve({
+//            contentBase: ['public'],
+//            host: 'localhost',
+//            port: 8080,
+//            proxy: {
+//                starlink: 'http://localhost:9999'
+//            }
+//        })
     ],
     watch: {
         clearScreen: false

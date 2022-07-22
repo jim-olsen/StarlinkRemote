@@ -11,12 +11,18 @@
 
     onDestroy(unsubscribeHistory);
 </script>
-<div style="display:flex; flex-flow:column; align-items: flex-start">
+<div style="display:flex; flex-flow:column; align-items: center">
+    <table>
+
+        <tr><th style="text-align: left;"><span style="text-align: center;">Time</span></th>
+            <th style="text-align: center;"><span>Cause</span>
+            <th style="text-align: center;"><span>Duration (s)</span></th></tr>
     {#each outages as outage}
-        <div style="display:flex; flex-flow: row; justify-content: space-between;gap: 10px;">
-            <span>{outage.start_timestamp}</span>
-            <span>{outage.cause}</span>
-            <span>{outage.duration.toFixed(2)}</span>
-        </div>
+        <tr>
+            <td style="text-align: left;"><span>{new Date((outage.start_timestamp / 1000000) + 315964817000).toLocaleString()}</span></td>
+            <td style="text-align: center;"><span>{outage.cause}</span></td>
+            <td style="text-align: center;"><span>{outage.duration.toFixed(2)}</span></td>
+        </tr>
     {/each}
+    </table>
 </div>

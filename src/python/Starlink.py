@@ -37,10 +37,10 @@ class Starlink:
 
         # Connection State
         if result.HasField("outage"):
-            if result.outage.cause == dish_pb2.DisOutage.Cause.NO_SCHEDULE:
+            if result.outage.cause == dish_pb2.DishOutage.Cause.NO_SCHEDULE:
                 status["state"] = "SEARCHING"
             else:
-                status["state"] = dish_pb2.DisOutage.Cause.Name(result.outage.cause)
+                status["state"] = dish_pb2.DishOutage.Cause.Name(result.outage.cause)
         else:
             status["state"] = "CONNECTED"
 
@@ -239,6 +239,8 @@ def main():
     numpy_image = np.array(obstruction_image).astype('uint8')
     img = Image.fromarray(numpy_image)
     img.show()
+#    starlink.dish_stow()
+#    starlink.dish_unstow()
 
 
 if __name__ == '__main__':

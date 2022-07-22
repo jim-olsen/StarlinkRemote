@@ -14,7 +14,6 @@
     export let width = 900,
         height = 600,
         barWidth = 40;
-
     const margin = { top: 15, bottom: 50, left: 50, right: 20 };
 
     const innerHeight = height - margin.top - margin.bottom,
@@ -34,13 +33,14 @@
 <main>
     <svg {width} {height}>
         <g class="lineChart" transform={`translate(${margin.left},${margin.top})`}>
-            <Axis {innerHeight} {margin} scale={xScale} position="bottom" tickFormat={function(d) {if (d < dataset.length) return dataset[d].x; else return "UNK";}} />
+            <Axis {innerHeight} {margin} scale={xScale} position="bottom" numTicks={dataset.length - 1}
+                  tickFormat={function(d) {if (d < dataset.length && Number.isInteger(d)) return dataset[d].x; else return null;}} />
             <Axis {innerHeight} {margin} scale={yScale} position="left" />
             <text transform={`translate(${-30},${innerHeight / 2}) rotate(-90)`}>{YAxisTitle}</text>
             {#each dataset as point, i}
                 <rect
                     x = "{xScale(i) - (barWidth/2)}"
-                    y = "{yScale(point.y) - 1}"
+                    y = "{yScale(point.y)}"
                     width = "{barWidth - 4}"
                     height = "{yScale(0) - yScale(point.y)}"
                     fill="blue"></rect>

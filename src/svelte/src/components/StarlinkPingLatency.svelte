@@ -26,8 +26,15 @@
 
     onDestroy(unsubscribeHistory);
 </script>
-<div class="center" style="display:flex; flex-flow:column; align-items: center">
-    <LineChart XAxisTitle="Elapsed Seconds" YAxisTitle="Latency (ms)" dataset={pingLatencyChartData} width={chartWidth} height={chartHeight} />
-    <h2>{pingLatency} / {pingLatencyAvg} / {pingLatencyMin} / {pingLatencyMax}</h2>
-    <h4>Ping Latency (current/avg/min/max) ms</h4>
+<div style="display:flex; flex-flow:column; align-items: center">
+    <div style="display:flex; flex-flow:row;gap: 10px;">
+        <LineChart XAxisTitle="Elapsed Seconds" YAxisTitle="Latency (ms)" dataset={pingLatencyChartData} width={chartWidth} height={chartHeight} />
+        <div style="display:flex; flex-flow:column;align-items: stretch;justify-content: space-evenly">
+            <span><b>Cur: {pingLatency}</b></span>
+            <span><b>Avg: {pingLatencyAvg}</b></span>
+            <span><b>Min: {pingLatencyMin}</b></span>
+            <span><b>Max: {pingLatencyMax}</b></span>
+        </div>
+    </div>
+    <h4>Ping Latency (ms)</h4>
 </div>

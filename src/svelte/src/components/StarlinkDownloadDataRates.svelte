@@ -29,7 +29,13 @@
     onDestroy(unsubscribeHistory);
 </script>
 <div style="display:flex; flex-flow:column; align-items: center; justify-content: flex-start;">
-    <LineChart XAxisTitle="Elapsed Seconds" YAxisTitle="Download (MBps)" dataset={downloadChartData} width={chartWidth} height={chartHeight} />
-    <h2>{downloadMbps} / {downloadAvgMbps} / {downloadMaxMbps}</h2>
-    <h4>Download MBps (current/avg/max)</h4>
+    <div style="display: flex; flex-flow: row; gap:10px;">
+        <LineChart XAxisTitle="Elapsed Seconds" YAxisTitle="Download (MBps)" dataset={downloadChartData} width={chartWidth} height={chartHeight} />
+        <div style="display: flex; flex-flow: column; justify-content: space-evenly;">
+            <span><b>Cur: {downloadMbps}</b></span>
+            <span><b>Avg: {downloadAvgMbps}</b></span>
+            <span><b>Max: {downloadMaxMbps}</b></span>
+        </div>
+    </div>
+    <h4>Download MBps</h4>
 </div>

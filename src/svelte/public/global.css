@@ -18,7 +18,7 @@ a {
     text-decoration: none;
 }
 
-text, h2, h1, h3, h4, span {
+text, h2, h1, h3, h4, span, hr {
     color: #BFDDE0;
     fill: #BFDDE0;
 }

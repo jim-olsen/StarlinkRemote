@@ -10,26 +10,25 @@ app = Flask(__name__)
 dishy = Starlink()
 
 
+#
+# Serve up the svelte application
+#
 @app.route("/")
 def base():
     return send_from_directory('../svelte/public', 'index.html')
 
 
+#
+# Handle generic svelte application requests
+#
 @app.route("/<path:path>")
 def home(path):
     return send_from_directory('../svelte/public', path)
 
 
-@app.route("/hello")
-def hello():
-    return "<html><body><h1>Hello!</h1></body></html>"
-
-
-@app.route("/rand")
-def random_number():
-    return str(random.randint(0, 100))
-
-
+#
+# provide the generic dishy status data through REST
+#
 @app.route("/starlink/status/")
 def starlink_status():
     status = dishy.get_status()
@@ -37,12 +36,18 @@ def starlink_status():
     return json.dumps(status, indent=3)
 
 
+#
+# provide the dishy historical data through REST
+#
 @app.route("/starlink/history/")
 def starlink_history():
     history = dishy.get_history()
     return json.dumps(history, indent=3)
 
 
+#
+# Get the obstruction image data, and transform into a png file and return through the get request
+#
 @app.route("/starlink/obstruction_image/")
 def starlink_obstruction_image():
     obstruction_image = dishy.get_obstruction_map()
@@ -54,5 +59,9 @@ def starlink_obstruction_image():
     return send_file(file_object, mimetype='image/PNG')
 
 
+#
+# Startup the flask server on port 9999.  Change the port here if you want it listening somewhere else, and simply
+# execute this python file to startup your server and serve the svelte app
+#
 if __name__ == "__main__":
     app.run(port=9999, debug=True)

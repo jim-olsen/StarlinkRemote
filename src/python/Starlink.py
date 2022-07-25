@@ -5,6 +5,7 @@ import statistics
 from PIL import Image
 import yagrc.reflector
 import numpy as np
+import time
 
 try:
     from yagrc import importer
@@ -18,15 +19,29 @@ from spacex.api.device import device_pb2_grpc
 from spacex.api.device import dish_pb2
 
 
+#
+# This class provides all of the dish oriented instructions for communicating with the gRPC available interfaces.  Each
+# of the methods tries to abstract the data into more usable forms for simple programmatic access rather than the
+# lower level formats of the raw calls.  This class is in no way all inclusive, but will grow as more features are
+# discovered.
+#
 class Starlink:
     starlinkurl = None
 
+    #
+    # url - The url to which we should connect to the dish.  The default provided value is likely what it should be
+    # unless you have setup some kind of alternative static route
+    #
     def __init__(self, url="192.168.100.1:9200"):
         if url is not None:
             self.starlinkurl = url
         with grpc.insecure_channel(self.starlinkurl) as channel:
             importer.resolve_lazy_imports(channel)
 
+    #
+    # return a status structure containing the values from a get_status request to the gRPC service.  This data has
+    # been simplified into a structure that is more readily consumable by a ui or a web client
+    #
     def get_status(self):
         with grpc.insecure_channel(self.starlinkurl) as channel:
             stub = device_pb2_grpc.DeviceStub(channel)
@@ -73,7 +88,7 @@ class Starlink:
         status["boresight_elevation"] = result.boresight_elevation_deg
         status["ethernet_speed"] = result.eth_speed_mbps
         status["snr_above_noise_floor"] = result.is_snr_above_noise_floor
-        status["ready_states"] = {"cady" : result.ready_states.cady,
+        status["ready_states"] = {"cady": result.ready_states.cady,
                                   "scp": result.ready_states.scp,
                                   "l1l2": result.ready_states.l1l2,
                                   "xphy": result.ready_states.xphy,
@@ -82,6 +97,12 @@ class Starlink:
 
         return status
 
+    #
+    # This method returns a single instance of a history object that contains the history for a specific kind of
+    # statistic, such as ping latency, or download mbps.  It also calculates standard statistical summary data for
+    # all of the values contained within the run of historical data stored.  This allows us to examine such things as
+    # mean, min, max of the data over the time period recorded.  It does not cover longer term historical data.
+    #
     def get_history_object(self, source, field, target_name):
         result = {}
         result[target_name] = []
@@ -106,6 +127,12 @@ class Starlink:
 
         return result
 
+    #
+    # Returns a record containing all the available historical data in the dish.  The dish at the time of writing
+    # only stores the last 900 seconds of data for each of these fields.  It also stores the last 12 hours of outage
+    # data.  Note that these outages will include ones that are less than 2 seconds in duration.  It also summarizes
+    # the outage data into buckets to look at the occurrences of outages by type.
+    #
     def get_history(self):
         with grpc.insecure_channel(self.starlinkurl) as channel:
             stub = device_pb2_grpc.DeviceStub(channel)
@@ -140,6 +167,11 @@ class Starlink:
 
         return history
 
+    #
+    # This method returns the raw SNR outage map data.  This data includes a 100x100 table view of the SNR values that
+    # the dish has encountered.  Places it has not yet gotten data for will be a value of -1.0, while the other values
+    # will be between 0.0 and 1.0, with 1.0 being the strongest signal.
+    #
     def get_obstruction_map_data(self):
         with grpc.insecure_channel(self.starlinkurl) as channel:
             stub = device_pb2_grpc.DeviceStub(channel)
@@ -149,28 +181,62 @@ class Starlink:
         return tuple(
             (result.snr[i:i + result.num_cols]) for i in range(0, result.num_cols * result.num_rows, result.num_cols))
 
+    #
+    # Takes two obstruction maps, and calculates the difference between them.  This allows you to examine two
+    # obstructions maps from two different period of time, and turn it into an image where newly seen signals are green.
+    # By doing this, you can see the satellite paths in green of new 'hits' on satellites.  Note that this only works
+    # on new data that is either a stronger signal than previously seen, or an unseen value.  This works well if you
+    # reboot the dish so all signal values are cleared.  On a dish with a fully populated obstruction map, you will see
+    # very little change.
+    #
+    def get_obstruction_map_differences(self, obstruction_map, baseline_obstruction_map):
+        image_array = []
+        for y, row in enumerate(obstruction_map):
+            image_array.append([None] * len(row))
+            for x, value in enumerate(row):
+                if value != baseline_obstruction_map[y][x]:
+                    image_array[y][x] = [0x00, 0xFF, 0x00]
+                    print("Value at " + str(y) + "," + str(x) + " has change from " + str(
+                        baseline_obstruction_map[y][x]) + " to " + str(value))
+                else:
+                    if value == -1:
+                        image_array[y][x] = [0x00, 0x00, 0x00]
+                    else:
+                        image_array[y][x] = [0xAD, 0xD8, 0xE6]
+
+        return image_array
+
+    #
+    # Fetch the obstruction map data from the dish, and populate it into an obstruction map image array.  This will be
+    # a series of RGB pixels that can then be displayed as the obstruction map itself.  See the main function below for
+    # an example of how to turn it into a png
+    #
     def get_obstruction_map(self):
         map_data = self.get_obstruction_map_data()
 
-        def pixel_bytes(row):
-            for point in row:
-                if point > 1.0:
-                    # shouldn't happen, but just in case...
-                    point = 1.0
-
-                if point >= 0.0:
-                    if point >= 0.5:
-                        yield [0x0AD, 0xD8, 0xE6]
-                    else:
-                        yield [0xFF, 0x00, 0x00]
-                else:
-                    yield [0x00, 0x00, 0x00]
-
         image_array = []
-        for image_row in map_data:
-            image_array.append(list(pixel_bytes(image_row)))
+        for y, image_row in enumerate(map_data):
+            image_array.append([None] * len(image_row))
+            for x, snr_value in enumerate(image_row):
+                if snr_value > 1.0:
+                    # shouldn't happen, but just in case...
+                    snr_value = 1.0
+                # if we have a valid SNR reading
+                if snr_value >= 0.0:
+                    # if snr is above 0.5, mark it as blue (unobstructed)
+                    if snr_value >= 0.5:
+                        image_array[y][x] = [0xAD, 0xD8, 0xE6]
+                    # otherwise mark it as red (obstructed)
+                    else:
+                        image_array[y][x] = [0xFF, 0x00, 0x00]
+                # otherwise we have no value so mark it as black (no data)
+                else:
+                    image_array[y][x] =  [0x00, 0x00, 0x00]
         return image_array
 
+    #
+    # Issue the command to ask the dish to stow itself
+    #
     def dish_stow(self):
         reflector = yagrc.reflector.GrpcReflectionClient()
         try:
@@ -189,6 +255,9 @@ class Starlink:
 
         return False
 
+    #
+    # Issue the command to ask the dish to unstow itself
+    #
     def dish_unstow(self):
         reflector = yagrc.reflector.GrpcReflectionClient()
         try:
@@ -207,6 +276,9 @@ class Starlink:
 
         return False
 
+    #
+    # Issue the command to ask the dish to reboot itself
+    #
     def dish_reboot(self):
         reflector = yagrc.reflector.GrpcReflectionClient()
         try:
@@ -225,7 +297,11 @@ class Starlink:
 
         return False
 
-
+#
+# If you just run this class instead of the server.py file that actually runs the flask server, run through each command
+# to test that it works.  stow/unstow are commented out by default as we don't want to accidentally run those unless you
+# really want to do that.
+#
 def main():
     starlink = Starlink()
     status = starlink.get_status()
@@ -239,6 +315,15 @@ def main():
     numpy_image = np.array(obstruction_image).astype('uint8')
     img = Image.fromarray(numpy_image)
     img.show()
+
+    obstruction_data_baseline = starlink.get_obstruction_map_data()
+    #    time.sleep(60 * 5)
+    obstruction_data = starlink.get_obstruction_map_data()
+    obstruction_image = starlink.get_obstruction_map_differences(obstruction_data, obstruction_data_baseline)
+    numpy_image = np.array(obstruction_image).astype('uint8')
+    img = Image.fromarray(numpy_image)
+#    img.show()
+
 #    starlink.dish_stow()
 #    starlink.dish_unstow()
 

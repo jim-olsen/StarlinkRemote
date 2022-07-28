@@ -13,12 +13,14 @@
     import StarlinkOutageDurationChart from "./components/StarlinkOutageDurationChart.svelte";
 
     let dashboard = true;
+    let outages = false;
     let allComponents = false;
 </script>
 
 <div style="display:flex; flex-flow:row">
-    <button class="tabButton" on:click={()=> {dashboard=true; allComponents=false;}}>Dashboard</button>
-    <button class="tabButton" on:click={()=> {dashboard=false; allComponents=true;}}>All Components</button>
+    <button class="tabButton" on:click={()=> {dashboard=true; outages=false;allComponents=false;}}>Dashboard</button>
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=true; allComponents=false;}}
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=false;allComponents=true;}}>All Components</button>
 </div>
 <StarlinkDataFetcher/>
 
@@ -62,6 +64,12 @@
                 <StarlinkPingDrop chartWidth=600 chartHeight=200/>
             </div>
         </div>
+    </div>
+{/if}
+
+{#if outages}
+    <div style="display:flex; flex-flow: column; justify-content: flex-start">
+
     </div>
 {/if}
 

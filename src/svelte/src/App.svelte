@@ -19,7 +19,7 @@
 
 <div style="display:flex; flex-flow:row">
     <button class="tabButton" on:click={()=> {dashboard=true; outages=false;allComponents=false;}}>Dashboard</button>
-    <button class="tabButton" on:click={()=> {dashboard=false; outages=true; allComponents=false;}}
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=true; allComponents=false;}}>Outages</button>
     <button class="tabButton" on:click={()=> {dashboard=false; outages=false;allComponents=true;}}>All Components</button>
 </div>
 <StarlinkDataFetcher/>

@@ -14,6 +14,7 @@
     import StarlinkFirmwareVersion from "./components/StarlinkFirmwareVersion.svelte";
     import StarlinkUpTime from "./components/StarlinkUpTime.svelte";
     import StarlinkAntenna from "./components/StarlinkAntenna.svelte";
+    import StarlinkControls from "./components/StarlinkControls.svelte";
 
     let dashboard = true;
     let outages = false;
@@ -94,7 +95,7 @@
 {/if}
 
 {#if dishControl}
-    <div style="display:flex; flex-flow: column; justify-content: space-evenly">
+    <div style="display:flex; flex-flow: column; justify-content: space-evenly; gap: 20px;">
         <span><b>Antenna Orientation</b></span>
         <StarlinkAntenna />
         <span><b>Dishy Control</b></span>
@@ -119,18 +120,18 @@
         </div>
         <div style="display:flex; flex-flow:row; justify-content: space-around">
             <div style="border: 1px solid white">
-                <StarlinkUploadDataRates chartWidth=600 chartHeight=200/>
+                <StarlinkUploadDataRates chartWidth=600 chartHeight=200 />
             </div>
             <div style="border: 1px solid white">
-                <StarlinkDownloadDataRates chartWidth=600 chartHeight=200/>
+                <StarlinkDownloadDataRates chartWidth=600 chartHeight=200 />
             </div>
         </div>
         <div style="display:flex; flex-flow:row; justify-content: space-around">
             <div style="border: 1px solid white">
-                <StarlinkPingLatency chartWidth=600 chartHeight=200/>
+                <StarlinkPingLatency chartWidth=600 chartHeight=200 />
             </div>
             <div style="border: 1px solid white">
-                <StarlinkPingDrop chartWidth=600 chartHeight=200/>
+                <StarlinkPingDrop chartWidth=600 chartHeight=200 />
             </div>
         </div>
         <div style="display:flex; flex-flow:row; justify-content: space-around">

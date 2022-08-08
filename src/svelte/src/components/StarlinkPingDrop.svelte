@@ -19,7 +19,7 @@
             });
             pingDropMax = (history.maximum_ping_drop_rate * 100).toFixed(2);
             pingDropAvg = (history.average_ping_drop_rate * 100).toFixed(2);
-            pingDrop = (history.ping_drop_rate[history.ping_drop_rate.length - 1] * 100).toFixed(2);
+            pingDrop = (history.ping_drop_rate[0] * 100).toFixed(2);
         }
     });
 

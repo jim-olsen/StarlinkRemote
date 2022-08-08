@@ -21,7 +21,7 @@
             pingLatencyMin = history.minimum_ping_latency.toFixed(2);
             pingLatencyMax = history.maximum_ping_latency.toFixed(2);
             pingLatencyAvg = history.average_ping_latency.toFixed(2);
-            pingLatency = history.ping_latency[history.ping_latency.length - 1].toFixed(2);
+            pingLatency = history.ping_latency[0].toFixed(2);
         }
     });
 

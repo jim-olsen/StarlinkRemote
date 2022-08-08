@@ -10,6 +10,7 @@
         if (history.hasOwnProperty("outages")) {
                 outageDurationChartData = [];
                 let outagesByType = [];
+                outagesByType[' '] = 0.0;
                 history.outages.forEach(outage => {
                     if (!outagesByType.hasOwnProperty(outage.cause)) {
                         outagesByType[outage.cause] = 0.0;
@@ -26,5 +27,5 @@
     onDestroy(unsubscribeHistory);
 </script>
 <div class="center" style="display:flex; flex-flow:column; justify-content: center; align-items: center">
-    <BarChart XAxisTitle="Outage Type" YAxisTitle="Duration (s)" dataset={outageDurationChartData} width=1000 height=300 />
+    <BarChart XAxisTitle="Outage Type" YAxisTitle="Duration (s)" dataset={outageDurationChartData} width=1200 height=300 />
 </div>

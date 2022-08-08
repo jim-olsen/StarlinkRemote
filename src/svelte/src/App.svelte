@@ -11,21 +11,27 @@
     import StarlinkOutagesList from "./components/StarlinkOutageList.svelte"
     import StarlinkAlerts from "./components/StarlinkAlerts.svelte";
     import StarlinkOutageDurationChart from "./components/StarlinkOutageDurationChart.svelte";
+    import StarlinkFirmwareVersion from "./components/StarlinkFirmwareVersion.svelte";
+    import StarlinkUpTime from "./components/StarlinkUpTime.svelte";
 
     let dashboard = true;
     let outages = false;
     let allComponents = false;
+    let rawData = false;
+    let dishControl = false;
 </script>
 
 <div style="display:flex; flex-flow:row">
-    <button class="tabButton" on:click={()=> {dashboard=true; outages=false;allComponents=false;}}>Dashboard</button>
-    <button class="tabButton" on:click={()=> {dashboard=false; outages=true; allComponents=false;}}>Outages</button>
-    <button class="tabButton" on:click={()=> {dashboard=false; outages=false;allComponents=true;}}>All Components</button>
+    <button class="tabButton" on:click={()=> {dashboard=true; outages=false;allComponents=false;rawData=false;dishControl=false;}}>Dashboard</button>
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=true; allComponents=false;rawData=false;dishControl=false;}}>Outages</button>
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=false; allComponents=false;rawData=false;dishControl=true;}}>Dish Control</button>
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=false; allComponents=false;rawData=true;dishControl=false;}}>Raw Data</button>
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=false;allComponents=true;rawData=false;dishControl=false;}}>All Components</button>
 </div>
 <StarlinkDataFetcher/>
 
 {#if dashboard}
-    <div style="display:flex; flex-flow:column; justify-content: flex-start">
+    <div style="display:flex; flex-flow:column; justify-content: center;">
         <div style="display:flex; flex-flow: row; justify-content: space-around;">
             <StarlinkStatusIndicator/>
             <div style="display:flex; flex-flow: row; justify-content: space-between; gap: 50px">
@@ -44,32 +50,55 @@
             <div style="display:flex; flex-flow: column; justify-content: flex-start;">
                 <span><b>Upload Speed</b></span>
                 <hr style="width: 100%"/>
-                <StarlinkUploadDataRates chartWidth=600 chartHeight=200/>
+                <StarlinkUploadDataRates chartWidth=600 chartHeight=200 />
             </div>
             <div style="display:flex; flex-flow: column; justify-content: flex-start;">
                 <span><b>Download Speed</b></span>
                 <hr style="width: 100%"/>
-                <StarlinkDownloadDataRates chartWidth=600 chartHeight=200/>
+                <StarlinkDownloadDataRates chartWidth=600 chartHeight=200 />
             </div>
         </div>
         <div style="display:flex; flex-flow: row; justify-content: space-evenly; gap: 20px;">
             <div style="display:flex; flex-flow: column; justify-content: flex-start;">
                 <span><b>Ping Latency</b></span>
                 <hr style="width: 100%"/>
-                <StarlinkPingLatency chartWidth=600 chartHeight=200/>
+                <StarlinkPingLatency chartWidth=600 chartHeight=200 />
             </div>
             <div style="display:flex; flex-flow: column; justify-content: flex-start;">
                 <span><b>Ping Drop</b></span>
                 <hr style="width: 100%"/>
-                <StarlinkPingDrop chartWidth=600 chartHeight=200/>
+                <StarlinkPingDrop chartWidth=600 chartHeight=200 />
             </div>
+        </div>
+        <div style="display:flex; flex-flow: row; justify-content: space-evenly;">
+            <StarlinkFirmwareVersion />
+            <StarlinkUpTime />
         </div>
     </div>
 {/if}
 
 {#if outages}
     <div style="display:flex; flex-flow: column; justify-content: flex-start">
+        <StarlinkOutagesList/>
+        <div style="display:flex; flex-flow:row; justify-content: space-around">
+                <StarlinkOutagesChart/>
+        </div>
+        <div style="display:flex; flex-flow:row; justify-content: space-around">
+            <StarlinkOutageDurationChart />
+        </div>
 
+    </div>
+{/if}
+
+{#if dishControl}
+    <div style="display:flex; flex-flow: column; justify-content: space-evenly">
+
+    </div>
+{/if}
+
+{#if rawData}
+    <div style="display:flex; flex-flow: column; justify-content: flex-start">
+        <StarlinkRawData/>
     </div>
 {/if}
 

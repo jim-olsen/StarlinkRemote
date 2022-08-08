@@ -17,7 +17,7 @@
 </script>
 
 <div>
-    <JSONTree value="{rawJson}"/>
+    <JSONTree value="{rawJson}" defaultExpandedLevel="3"/>
     <button on:click={getStatus}>Get Dishy Status</button>
     <button on:click={getHistory}>Get Dishy History</button>
 </div>

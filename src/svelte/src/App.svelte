@@ -13,20 +13,23 @@
     import StarlinkOutageDurationChart from "./components/StarlinkOutageDurationChart.svelte";
     import StarlinkFirmwareVersion from "./components/StarlinkFirmwareVersion.svelte";
     import StarlinkUpTime from "./components/StarlinkUpTime.svelte";
+    import StarlinkAntenna from "./components/StarlinkAntenna.svelte";
 
     let dashboard = true;
     let outages = false;
     let allComponents = false;
     let rawData = false;
     let dishControl = false;
+    let testScreen = false;
 </script>
 
 <div style="display:flex; flex-flow:row">
-    <button class="tabButton" on:click={()=> {dashboard=true; outages=false;allComponents=false;rawData=false;dishControl=false;}}>Dashboard</button>
-    <button class="tabButton" on:click={()=> {dashboard=false; outages=true; allComponents=false;rawData=false;dishControl=false;}}>Outages</button>
-    <button class="tabButton" on:click={()=> {dashboard=false; outages=false; allComponents=false;rawData=false;dishControl=true;}}>Dish Control</button>
-    <button class="tabButton" on:click={()=> {dashboard=false; outages=false; allComponents=false;rawData=true;dishControl=false;}}>Raw Data</button>
-    <button class="tabButton" on:click={()=> {dashboard=false; outages=false;allComponents=true;rawData=false;dishControl=false;}}>All Components</button>
+    <button class="tabButton" on:click={()=> {dashboard=true; outages=false;allComponents=false;rawData=false;dishControl=false;testScreen=false;}}>Dashboard</button>
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=true; allComponents=false;rawData=false;dishControl=false;testScreen=false;}}>Outages</button>
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=false; allComponents=false;rawData=false;dishControl=true;testScreen=false;}}>Dish Control</button>
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=false; allComponents=false;rawData=true;dishControl=false;testScreen=false;}}>Raw Data</button>
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=false;allComponents=true;rawData=false;dishControl=false;testScreen=false}}>All Components</button>
+    <button class="tabButton" on:click={()=> {dashboard=false; outages=false;allComponents=false;rawData=false;dishControl=false;testScreen=true}}>Test</button>
 </div>
 <StarlinkDataFetcher/>
 
@@ -92,7 +95,9 @@
 
 {#if dishControl}
     <div style="display:flex; flex-flow: column; justify-content: space-evenly">
-
+        <span><b>Antenna Orientation</b></span>
+        <StarlinkAntenna />
+        <span><b>Dishy Control</b></span>
     </div>
 {/if}
 
@@ -148,4 +153,7 @@
             <StarlinkRawData/>
         </div>
     </div>
+{/if}
+
+{#if testScreen}
 {/if}

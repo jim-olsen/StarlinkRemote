@@ -18,8 +18,7 @@
     "svelte": "^3.29.6",
     "@zerodevx/svelte-json-view": "^0.2.1",
     "svelte-json-tree": "^1.0.0",
-    "d3": "^7.6.1"
-  },
+    "d3": "^7.6.1"},
   "scripts": {
     "build": "rollup -c",
     "autobuild": "rollup -c -w",

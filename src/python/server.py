@@ -58,25 +58,27 @@ def starlink_obstruction_image():
     file_object.seek(0)
     return send_file(file_object, mimetype='image/PNG')
 
+
 #
 # Issue a request to the disk to stow itself
 #
-#@app.route("/starlink/stow", methods = ['POST'])
-#def stow_dish():
-#    dishy.dish_stow()
+@app.route("/starlink/stow", methods=['POST'])
+def stow_dish():
+    dishy.dish_stow()
 
 
 #
 # Issue a request to the dish to unstow itself
 #
-@app.route("/starlink/unstow", methods = ['POST'])
+@app.route("/starlink/unstow", methods=['POST'])
 def unstow_dish():
     dishy.dish_unstow()
+
 
 #
 # Issue a request for the dish to reboot itself
 #
-@app.route("/starlink/reboot", methods = ['POST'])
+@app.route("/starlink/reboot", methods=['POST'])
 def reboot_dish():
     dishy.dish_reboot()
 

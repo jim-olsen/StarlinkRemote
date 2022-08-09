@@ -18,7 +18,7 @@ a {
     text-decoration: none;
 }
 
-text, h2, h1, h3, h4, span, hr {
+text, h2, h1, h3, h4, span, hr, label {
     color: #BFDDE0;
     fill: #BFDDE0;
 }
@@ -65,6 +65,11 @@ button:active {
 
 button:focus {
     border-color: #666;
+}
+
+button:disabled{
+    background-color: #333333;
+    color: #555555;
 }
 
 .axis line {

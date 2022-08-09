@@ -29,8 +29,6 @@
     <button class="tabButton" on:click={()=> {dashboard=false; outages=true; allComponents=false;rawData=false;dishControl=false;testScreen=false;}}>Outages</button>
     <button class="tabButton" on:click={()=> {dashboard=false; outages=false; allComponents=false;rawData=false;dishControl=true;testScreen=false;}}>Dish Control</button>
     <button class="tabButton" on:click={()=> {dashboard=false; outages=false; allComponents=false;rawData=true;dishControl=false;testScreen=false;}}>Raw Data</button>
-    <button class="tabButton" on:click={()=> {dashboard=false; outages=false;allComponents=true;rawData=false;dishControl=false;testScreen=false}}>All Components</button>
-    <button class="tabButton" on:click={()=> {dashboard=false; outages=false;allComponents=false;rawData=false;dishControl=false;testScreen=true}}>Test</button>
 </div>
 <StarlinkDataFetcher/>
 
@@ -99,6 +97,7 @@
         <span><b>Antenna Orientation</b></span>
         <StarlinkAntenna />
         <span><b>Dishy Control</b></span>
+        <StarlinkControls />
     </div>
 {/if}
 
@@ -106,55 +105,4 @@
     <div style="display:flex; flex-flow: column; justify-content: flex-start">
         <StarlinkRawData/>
     </div>
-{/if}
-
-{#if allComponents}
-    <div style="display: flex; flex-flow: column; justify-content: space-around">
-        <div style="display:flex; flex-flow:row; justify-content: space-around">
-            <div style="border: 1px solid white">
-                <StarlinkStatusIndicator/>
-            </div>
-            <div style="border: 1px solid white">
-                <StarlinkAlerts/>
-            </div>
-        </div>
-        <div style="display:flex; flex-flow:row; justify-content: space-around">
-            <div style="border: 1px solid white">
-                <StarlinkUploadDataRates chartWidth=600 chartHeight=200 />
-            </div>
-            <div style="border: 1px solid white">
-                <StarlinkDownloadDataRates chartWidth=600 chartHeight=200 />
-            </div>
-        </div>
-        <div style="display:flex; flex-flow:row; justify-content: space-around">
-            <div style="border: 1px solid white">
-                <StarlinkPingLatency chartWidth=600 chartHeight=200 />
-            </div>
-            <div style="border: 1px solid white">
-                <StarlinkPingDrop chartWidth=600 chartHeight=200 />
-            </div>
-        </div>
-        <div style="display:flex; flex-flow:row; justify-content: space-around">
-            <div style="border: 1px solid white">
-                <StarlinkOutagesChart/>
-            </div>
-        </div>
-        <div style="display:flex; flex-flow:row; justify-content: space-around">
-            <div style="border: 1px solid white">
-                <StarlinkOutageDurationChart/>
-            </div>
-        </div>
-        <div style="border: 1px solid white">
-            <StarlinkOutagesList/>
-        </div>
-        <div style="border: 1px solid white">
-            <StarlinkObstructionMap/>
-        </div>
-        <div style="border: 1px solid white">
-            <StarlinkRawData/>
-        </div>
-    </div>
-{/if}
-
-{#if testScreen}
 {/if}

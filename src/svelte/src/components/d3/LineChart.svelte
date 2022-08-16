@@ -16,8 +16,8 @@
 
     const margin = { top: 15, bottom: 50, left: 50, right: 20 };
 
-    const innerHeight = height - margin.top - margin.bottom,
-        innerWidth = width - margin.left - margin.right;
+    $: innerHeight = height - margin.top - margin.bottom;
+    $: innerWidth = width - margin.left - margin.right;
 
     $: xScale = scaleLinear()
         .domain(extent(dataset, (d) => d.x))

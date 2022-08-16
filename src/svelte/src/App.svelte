@@ -22,7 +22,11 @@
     let rawData = false;
     let dishControl = false;
     let testScreen = false;
+    let innerWidth = 0;
+    let outerWidth = 0
 </script>
+
+<svelte:window bind:innerWidth bind:outerWidth />
 
 <div style="display:flex; flex-flow:row">
     <button class="tabButton" on:click={()=> {dashboard=true; outages=false;allComponents=false;rawData=false;dishControl=false;testScreen=false;}}>Dashboard</button>
@@ -34,10 +38,10 @@
 
 {#if dashboard}
     <div style="display:flex; flex-flow:column; justify-content: center;">
-        <div style="display:flex; flex-flow: row; justify-content: space-around;">
+        <div style="display:flex; flex-flow: row; justify-content: space-evenly; flex-wrap: wrap;">
             <StarlinkStatusIndicator/>
-            <div style="display:flex; flex-flow: row; justify-content: space-between; gap: 50px">
-                <div style="display:flex; justify-content: flex-start; flex-flow: column; align-items: center">
+            <div style="display:flex; flex-flow: row; justify-content: space-evenly; gap: 50px">
+                <div style="display:flex; justify-content: center; flex-flow: column; align-items: center">
                     <span><b>Alerts</b></span>
                     <hr style="width: 100%"/>
                     <StarlinkAlerts/>
@@ -48,31 +52,31 @@
                 </div>
             </div>
         </div>
-        <div style="display:flex; flex-flow: row; justify-content: space-evenly; gap: 20px;">
+        <div style="display:flex; flex-flow: row; justify-content: space-evenly; gap: 20px; flex-wrap: wrap;">
             <div style="display:flex; flex-flow: column; justify-content: flex-start;">
                 <span><b>Upload Speed</b></span>
                 <hr style="width: 100%"/>
-                <StarlinkUploadDataRates chartWidth=600 chartHeight=200 />
+                <StarlinkUploadDataRates chartWidth={Math.min(600, outerWidth - 100)} chartHeight=200 />
             </div>
             <div style="display:flex; flex-flow: column; justify-content: flex-start;">
                 <span><b>Download Speed</b></span>
                 <hr style="width: 100%"/>
-                <StarlinkDownloadDataRates chartWidth=600 chartHeight=200 />
+                <StarlinkDownloadDataRates chartWidth={Math.min(600, outerWidth - 100)} chartHeight=200 />
             </div>
         </div>
-        <div style="display:flex; flex-flow: row; justify-content: space-evenly; gap: 20px;">
+        <div style="display:flex; flex-flow: row; justify-content: space-evenly; gap: 20px; flex-wrap: wrap;">
             <div style="display:flex; flex-flow: column; justify-content: flex-start;">
                 <span><b>Ping Latency</b></span>
                 <hr style="width: 100%"/>
-                <StarlinkPingLatency chartWidth=600 chartHeight=200 />
+                <StarlinkPingLatency chartWidth={Math.min(600, outerWidth - 100)} chartHeight=200 />
             </div>
             <div style="display:flex; flex-flow: column; justify-content: flex-start;">
                 <span><b>Ping Drop</b></span>
                 <hr style="width: 100%"/>
-                <StarlinkPingDrop chartWidth=600 chartHeight=200 />
+                <StarlinkPingDrop chartWidth={Math.min(600, outerWidth - 100)} chartHeight=200 />
             </div>
         </div>
-        <div style="display:flex; flex-flow: row; justify-content: space-evenly;">
+        <div style="display:flex; flex-flow: row; justify-content: space-around; flex-wrap: wrap;">
             <StarlinkFirmwareVersion />
             <StarlinkUpTime />
         </div>

@@ -1,9 +1,10 @@
-//
-// This component is the data store for fetching data from the starlink terminal.  This avoids all of the individual
-// components from having to do their own fetches generating a ton of traffic.  Simply subscribe to the individual
-// feed that your component requires and it will refresh the data on the appropriate refresh rate.
-//
 <script>
+    //
+    // This component is the data store for fetching data from the starlink terminal.  This avoids all of the individual
+    // components from having to do their own fetches generating a ton of traffic.  Simply subscribe to the individual
+    // feed that your component requires and it will refresh the data on the appropriate refresh rate.
+    //    import {starlinkStatus} from "../stores";
+    //
     import {starlinkStatus} from "../stores";
     import {starlinkHistory} from "../stores";
 

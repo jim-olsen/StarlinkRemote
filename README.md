@@ -28,7 +28,7 @@ perhaps less flexible.
 ## Build the Svelte Application
 
 Before you can run the python server, you need to build the Svelte application.  Note that you must have npm already
-installed on your system.  Then simply:
+installed on your system and the Node version must be v14 or higher.  Then simply:
 
 ```
 cd ./src/svelte
@@ -52,3 +52,5 @@ The application can then be run with
 cd ./src/python
 python server.py
 ```
+
+If you want to access other than from your local machine, you are going to need to change the binding from '127.0.0.1' in server.py to '0.0.0.0' or the specific IP you want it to be served from.  This is done to not have it exposed to the world out of the box, but rather just your local machine.

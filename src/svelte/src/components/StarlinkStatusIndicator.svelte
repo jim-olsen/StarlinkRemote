@@ -13,6 +13,8 @@
                 services.push({serviceName: property, serviceState: status.ready_states[property]})
             }
         }
+        services.push({serviceName: "gps", serviceState: status["gps_valid"]})
+        services.push({serviceName: "snr", serviceState: status["snr_above_noise_floor"]})
     });
 
     onDestroy(unsubscribeStatus)
